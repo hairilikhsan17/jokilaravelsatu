@@ -19,12 +19,24 @@ class OwnerMiddleware
             return redirect()->route('login');
         }
 
-        if (auth()->user()->role !== 'owner') {
+        $user = auth()->user();
+        
+        // Cek apakah user aktif
+        if (!$user->is_active) {
+            auth()->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            
+            return redirect()->route('login')->with('error', 'Akun Anda telah dinonaktifkan. Silakan hubungi administrator.');
+        }
+
+        if ($user->role !== 'owner') {
             abort(403, 'Unauthorized access. Owner role required.');
         }
 
         return $next($request);
     }
 }
+
 
 

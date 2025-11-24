@@ -257,6 +257,11 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+        
+        .sidebar-footer .user-info img {
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
 
         .sidebar-footer .user-info span {
             font-weight: 500;
@@ -527,34 +532,46 @@
         
         <ul class="sidebar-menu">
             <li>
-                <a href="{{ route('staff.dashboard') }}" class="{{ request()->routeIs('staff.dashboard') ? 'active' : '' }}">
+                <a href="{{ route('dashboard.staff') }}" class="{{ request()->routeIs('dashboard.staff') ? 'active' : '' }}">
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li>
-                <a href="{{ route('staff.transaksi.masuk') }}" class="{{ request()->routeIs('staff.transaksi.masuk*') ? 'active' : '' }}">
-                    <i class="bi bi-box-arrow-in-down"></i>
-                    <span>Stok Masuk</span>
+                <a href="{{ route('staff.obat.index') }}" class="{{ request()->routeIs('staff.obat.*') ? 'active' : '' }}">
+                    <i class="bi bi-capsule-pill"></i>
+                    <span>Data Obat / Alkes</span>
                 </a>
             </li>
             <li>
-                <a href="{{ route('staff.transaksi.keluar') }}" class="{{ request()->routeIs('staff.transaksi.keluar*') ? 'active' : '' }}">
-                    <i class="bi bi-box-arrow-up"></i>
-                    <span>Stok Keluar</span>
+                <a href="{{ route('staff.laporan.index') }}" class="{{ request()->routeIs('staff.laporan.*') ? 'active' : '' }}">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>Laporan Stok / Aktivitas</span>
                 </a>
             </li>
             <li>
-                <a href="{{ route('staff.transaksi.index') }}" class="{{ request()->routeIs('staff.transaksi.index') ? 'active' : '' }}">
+                <a href="{{ route('staff.riwayat.index') }}" class="{{ request()->routeIs('staff.riwayat.*') ? 'active' : '' }}">
                     <i class="bi bi-clock-history"></i>
-                    <span>Riwayat Transaksi</span>
+                    <span>Riwayat Aktivitas</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('staff.profil.index') }}" class="{{ request()->routeIs('staff.profil.*') ? 'active' : '' }}">
+                    <i class="bi bi-person-circle"></i>
+                    <span>Profil Staff</span>
                 </a>
             </li>
         </ul>
 
         <div class="sidebar-footer">
             <div class="user-info">
-                <i class="bi bi-person-circle"></i>
+                @if(auth()->user()->photo)
+                    <img src="{{ asset('storage/photos/' . auth()->user()->photo) }}" 
+                         alt="{{ auth()->user()->name }}" 
+                         style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 0.75rem; border: 2px solid #38ef7d;">
+                @else
+                    <i class="bi bi-person-circle"></i>
+                @endif
                 <span>{{ auth()->user()->name }}</span>
             </div>
             <form method="POST" action="{{ route('logout') }}">

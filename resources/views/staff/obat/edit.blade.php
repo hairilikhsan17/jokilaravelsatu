@@ -16,6 +16,7 @@
                     <div class="mb-3">
                         <label for="edit_nama" class="form-label">Nama <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="edit_nama" name="nama" required>
+                        <div class="invalid-feedback"></div>
                     </div>
                     <div class="mb-3">
                         <label for="edit_kategori" class="form-label">Kategori <span class="text-danger">*</span></label>
@@ -24,10 +25,12 @@
                             <option value="Obat">Obat</option>
                             <option value="Alkes">Alkes</option>
                         </select>
+                        <div class="invalid-feedback"></div>
                     </div>
                     <div class="mb-3">
                         <label for="edit_stok" class="form-label">Stok <span class="text-danger">*</span></label>
                         <input type="number" class="form-control" id="edit_stok" name="stok" min="0" required>
+                        <div class="invalid-feedback"></div>
                     </div>
                     <div class="mb-3">
                         <label for="edit_kadaluarsa" class="form-label">Kadaluarsa</label>

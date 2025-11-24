@@ -2,7 +2,7 @@
 <div class="modal fade" id="tambahObatModal" tabindex="-1" aria-labelledby="tambahObatModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
-            <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px 15px 0 0; border: none; padding: 1.5rem 2rem;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; border-radius: 15px 15px 0 0; border: none; padding: 1.5rem 2rem;">
                 <h5 class="modal-title" id="tambahObatModalLabel" style="font-weight: 600;">
                     <i class="bi bi-capsule-pill me-2"></i>Tambah Data Obat / Alkes
                 </h5>
@@ -14,6 +14,7 @@
                     <div class="mb-3">
                         <label for="nama" class="form-label">Nama <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="nama" name="nama" required>
+                        <div class="invalid-feedback"></div>
                     </div>
                     <div class="mb-3">
                         <label for="kategori" class="form-label">Kategori <span class="text-danger">*</span></label>
@@ -22,10 +23,12 @@
                             <option value="Obat">Obat</option>
                             <option value="Alkes">Alkes</option>
                         </select>
+                        <div class="invalid-feedback"></div>
                     </div>
                     <div class="mb-3">
                         <label for="stok" class="form-label">Stok <span class="text-danger">*</span></label>
                         <input type="number" class="form-control" id="stok" name="stok" min="0" required>
+                        <div class="invalid-feedback"></div>
                     </div>
                     <div class="mb-3">
                         <label for="kadaluarsa" class="form-label">Kadaluarsa</label>

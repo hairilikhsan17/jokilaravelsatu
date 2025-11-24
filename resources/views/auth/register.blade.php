@@ -246,10 +246,10 @@
         .input-group-custom .input-icon {
             position: absolute;
             left: 15px;
-            top: 50%;
+            top: calc(50% + 12px);
             transform: translateY(-50%);
             color: #11998e;
-            font-size: 1.1rem;
+            font-size: 1rem;
             z-index: 3;
             pointer-events: none;
             transition: all 0.3s ease;
@@ -279,7 +279,7 @@
 
         .input-group-custom:focus-within .input-icon {
             color: #38ef7d;
-            transform: translateY(-50%) scale(1.1);
+            transform: translateY(-50%) scale(1.05);
         }
 
         .invalid-feedback {
@@ -335,11 +335,11 @@
         .password-toggle {
             position: absolute;
             right: 15px;
-            top: 50%;
+            top: 68%;
             transform: translateY(-50%);
             cursor: pointer;
             color: #999;
-            font-size: 1.1rem;
+            font-size: 1rem;
             z-index: 2;
             transition: color 0.3s ease;
         }

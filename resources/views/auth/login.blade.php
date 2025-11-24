@@ -229,15 +229,13 @@
         .input-group-custom > i {
             position: absolute;
             left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
+            top: calc(1.2rem + 0.5rem + 0.875rem);
             color: #667eea;
-            font-size: 1.1rem;
+            font-size: 1rem;
             z-index: 3;
             pointer-events: none;
-            transition: all 0.3s ease;
+            transition: color 0.3s ease;
         }
-
         .form-control {
             padding: 0.875rem 1rem 0.875rem 3rem;
             border: 2px solid #e0e0e0;
@@ -262,7 +260,6 @@
 
         .input-group-custom:focus-within > i {
             color: #764ba2;
-            transform: translateY(-50%) scale(1.1);
         }
 
         .invalid-feedback {
@@ -435,22 +432,6 @@
             text-decoration: underline;
         }
 
-        .password-toggle {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #999;
-            font-size: 1.1rem;
-            z-index: 2;
-            transition: color 0.3s ease;
-        }
-
-        .password-toggle:hover {
-            color: #667eea;
-        }
-
         /* Responsive */
         @media (max-width: 576px) {
             .login-wrapper {
@@ -496,6 +477,12 @@
 
                 <!-- Body -->
                 <div class="login-body">
+                    @if (session('error'))
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle me-2"></i>{{ session('error') }}
+                        </div>
+                    @endif
+
                     @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul class="mb-0">
@@ -536,9 +523,6 @@
                                    name="password" 
                                    placeholder="Masukkan password Anda"
                                    required>
-                            <span class="password-toggle" onclick="togglePassword()">
-                                <i class="bi bi-eye" id="toggleIcon"></i>
-                            </span>
                             @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -575,22 +559,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Toggle password visibility
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const toggleIcon = document.getElementById('toggleIcon');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleIcon.classList.remove('bi-eye');
-                toggleIcon.classList.add('bi-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                toggleIcon.classList.remove('bi-eye-slash');
-                toggleIcon.classList.add('bi-eye');
-            }
-        }
-
         // Add floating animation to inputs on focus
         document.querySelectorAll('.form-control').forEach(input => {
             input.addEventListener('focus', function() {

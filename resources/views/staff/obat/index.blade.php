@@ -1,4 +1,4 @@
-@extends('layouts.owner')
+@extends('layouts.staff')
 
 @section('title', 'Data Obat / Alkes')
 
@@ -45,7 +45,7 @@
                         <th class="align-middle">Supplier</th>
                         <th class="text-center align-middle">Lokasi</th>
                         <th class="align-middle">Keterangan</th>
-                        <th class="text-center align-middle" style="width: 150px;">Aksi</th>
+                        <th class="text-center align-middle" style="width: 120px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -123,28 +123,57 @@
     </div>
 </div>
 
-@include('owner.obat.create')
-@include('owner.obat.edit')
-@include('owner.obat.delete')
+@include('staff.obat.create')
+@include('staff.obat.edit')
+@include('staff.obat.delete')
 @endsection
 
 @push('scripts')
 <script>
+    // Function untuk menampilkan notifikasi
+    function showNotification(type, message) {
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+        const icon = type === 'success' ? 'bi-check-circle' : 'bi-exclamation-triangle';
+        
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert ${alertClass} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+            <i class="bi ${icon} me-2"></i>${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        // Insert di atas h1
+        const content = document.querySelector('.d-flex.justify-content-between');
+        if (content) {
+            content.parentNode.insertBefore(alertDiv, content);
+        }
+        
+        // Auto dismiss setelah 5 detik
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+    }
+
     // Handle Tambah Obat
     document.getElementById('formTambahObat').addEventListener('submit', function(e) {
         e.preventDefault();
-        const formData = new FormData(this);
-        const submitBtn = this.querySelector('button[type="submit"]');
+        const form = this;
+        const formData = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
+        
+        // Reset validation
+        form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
         
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...';
         
-        fetch('{{ route("owner.obat.store") }}', {
+        fetch('{{ route("staff.obat.store") }}', {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
             },
             body: formData
         })
@@ -158,18 +187,34 @@
         })
         .then(data => {
             if (data.success) {
+                showNotification('success', data.message || 'Data berhasil ditambahkan.');
                 const modal = bootstrap.Modal.getInstance(document.getElementById('tambahObatModal'));
                 modal.hide();
-                location.reload();
+                setTimeout(() => {
+                    window.location.reload();
+                }, 300);
             } else {
-                alert('Error: ' + (data.message || 'Terjadi kesalahan'));
+                if (data.errors) {
+                    Object.keys(data.errors).forEach(field => {
+                        const input = form.querySelector(`[name="${field}"]`);
+                        if (input) {
+                            input.classList.add('is-invalid');
+                            const feedback = input.nextElementSibling;
+                            if (feedback && feedback.classList.contains('invalid-feedback')) {
+                                feedback.textContent = data.errors[field][0];
+                            }
+                        }
+                    });
+                } else {
+                    showNotification('error', data.message || 'Terjadi kesalahan');
+                }
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error: ' + error.message);
+            showNotification('error', 'Terjadi kesalahan saat menyimpan data');
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
         });
@@ -177,7 +222,7 @@
 
     // Handle Edit Obat
     function editObat(id) {
-        fetch(`{{ route("owner.obat.edit", ":id") }}`.replace(':id', id), {
+        fetch(`{{ route("staff.obat.edit", ":id") }}`.replace(':id', id), {
             headers: {
                 'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest'
@@ -194,7 +239,13 @@
             document.getElementById('edit_nama').value = data.nama || '';
             document.getElementById('edit_kategori').value = data.kategori || '';
             document.getElementById('edit_stok').value = data.stok || 0;
-            document.getElementById('edit_kadaluarsa').value = data.kadaluarsa ? data.kadaluarsa.split('T')[0] : '';
+            // Format tanggal untuk input date (YYYY-MM-DD)
+            if (data.kadaluarsa) {
+                const tanggal = new Date(data.kadaluarsa);
+                document.getElementById('edit_kadaluarsa').value = tanggal.toISOString().split('T')[0];
+            } else {
+                document.getElementById('edit_kadaluarsa').value = '';
+            }
             document.getElementById('edit_supplier').value = data.supplier || '';
             document.getElementById('edit_satuan').value = data.satuan || '';
             document.getElementById('edit_lokasi').value = data.lokasi || '';
@@ -205,27 +256,32 @@
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Terjadi kesalahan saat mengambil data: ' + error.message);
+            showNotification('error', 'Terjadi kesalahan saat mengambil data: ' + error.message);
         });
     }
 
     // Handle Update Obat
     document.getElementById('formEditObat').addEventListener('submit', function(e) {
         e.preventDefault();
+        const form = this;
         const id = document.getElementById('edit_id').value;
-        const formData = new FormData(this);
+        const formData = new FormData(form);
         formData.append('_method', 'PUT');
-        const submitBtn = this.querySelector('button[type="submit"]');
+        const submitBtn = form.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
+        
+        // Reset validation
+        form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
         
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Memperbarui...';
         
-        fetch(`{{ route("owner.obat.update", ":id") }}`.replace(':id', id), {
+        fetch(`{{ route("staff.obat.update", ":id") }}`.replace(':id', id), {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
             },
             body: formData
         })
@@ -239,94 +295,35 @@
         })
         .then(data => {
             if (data.success) {
+                showNotification('success', data.message || 'Data berhasil diperbarui.');
                 const modal = bootstrap.Modal.getInstance(document.getElementById('editObatModal'));
                 modal.hide();
-                location.reload();
+                // Reload halaman setelah modal ditutup
+                setTimeout(() => {
+                    window.location.reload();
+                }, 300);
             } else {
-                alert('Error: ' + (data.message || 'Terjadi kesalahan'));
+                if (data.errors) {
+                    Object.keys(data.errors).forEach(field => {
+                        const input = form.querySelector(`[name="${field}"]`);
+                        if (input) {
+                            input.classList.add('is-invalid');
+                            const feedback = input.nextElementSibling;
+                            if (feedback && feedback.classList.contains('invalid-feedback')) {
+                                feedback.textContent = data.errors[field][0];
+                            }
+                        }
+                    });
+                } else {
+                    showNotification('error', data.message || 'Terjadi kesalahan');
+                }
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error: ' + error.message);
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalText;
-        });
-    });
-
-    // Handle Delete Obat
-    function deleteObat(id) {
-        // Ambil data obat untuk ditampilkan di modal
-        fetch(`{{ route("owner.obat.edit", ":id") }}`.replace(':id', id), {
-            headers: {
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Gagal mengambil data');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Isi data ke modal delete
-            document.getElementById('delete_id').value = data.id;
-            document.getElementById('delete_nama').textContent = data.nama || '-';
-            document.getElementById('delete_kategori').textContent = data.kategori || '-';
-            document.getElementById('delete_stok').textContent = (data.stok || 0) + (data.satuan ? ' ' + data.satuan : '');
-            
-            // Tampilkan modal
-            const modal = new bootstrap.Modal(document.getElementById('deleteObatModal'));
-            modal.show();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Terjadi kesalahan saat mengambil data: ' + error.message);
-        });
-    }
-
-    // Handle Submit Delete
-    document.getElementById('formDeleteObat').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const id = document.getElementById('delete_id').value;
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menghapus...';
-        
-        fetch(`{{ route("owner.obat.destroy", ":id") }}`.replace(':id', id), {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(data => {
-                    throw new Error(data.message || 'Terjadi kesalahan');
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteObatModal'));
-                modal.hide();
-                location.reload();
-            } else {
-                alert('Error: ' + (data.message || 'Terjadi kesalahan'));
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error: ' + error.message);
+            showNotification('error', 'Terjadi kesalahan saat memperbarui data: ' + error.message);
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
         });
@@ -335,18 +332,13 @@
     // Reset form ketika modal ditutup
     document.getElementById('tambahObatModal').addEventListener('hidden.bs.modal', function () {
         document.getElementById('formTambahObat').reset();
+        document.getElementById('formTambahObat').querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
     });
 
     document.getElementById('editObatModal').addEventListener('hidden.bs.modal', function () {
         document.getElementById('formEditObat').reset();
-    });
-
-    document.getElementById('deleteObatModal').addEventListener('hidden.bs.modal', function () {
-        document.getElementById('formDeleteObat').reset();
-        // Reset button state
-        const submitBtn = document.querySelector('#formDeleteObat button[type="submit"]');
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Ya, Hapus';
+        document.getElementById('formEditObat').querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
     });
 </script>
 @endpush
+
