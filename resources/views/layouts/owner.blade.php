@@ -231,7 +231,7 @@
             font-size: 1.75rem;
             color: #667eea;
         }
-        
+
         .sidebar-footer .user-info img {
             margin-right: 0.75rem;
             flex-shrink: 0;
@@ -487,7 +487,7 @@
                          alt="{{ auth()->user()->name }}" 
                          style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 0.75rem; border: 2px solid #667eea;">
                 @else
-                    <i class="bi bi-person-circle"></i>
+                <i class="bi bi-person-circle"></i>
                 @endif
                 <span>{{ auth()->user()->name }}</span>
             </div>

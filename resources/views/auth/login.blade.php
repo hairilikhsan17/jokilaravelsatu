@@ -294,6 +294,11 @@
             }
         }
 
+        .alert-success {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            color: #155724;
+        }
+
         .alert-danger {
             background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
             color: #721c24;
@@ -477,6 +482,12 @@
 
                 <!-- Body -->
                 <div class="login-body">
+                    @if (session('success'))
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+                        </div>
+                    @endif
+
                     @if (session('error'))
                         <div class="alert alert-danger">
                             <i class="bi bi-exclamation-triangle me-2"></i>{{ session('error') }}

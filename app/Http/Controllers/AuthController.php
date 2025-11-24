@@ -83,7 +83,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', 'confirmed'],
             'role' => ['required', 'in:owner,staff'],
         ]);
 
@@ -95,16 +95,9 @@ class AuthController extends Controller
             'is_active' => true, // Default aktif untuk user baru
         ]);
 
-        Auth::login($user);
-
-        // Redirect based on role
-        if ($user->role === 'owner') {
-            return redirect()->route('dashboard.owner');
-        } elseif ($user->role === 'staff') {
-            return redirect()->route('dashboard.staff');
-        }
-
-        return redirect()->intended('/');
+        // Redirect ke halaman login dengan pesan sukses
+        return redirect()->route('login')
+            ->with('success', 'Registrasi berhasil! Silakan login dengan email dan password Anda.');
     }
 
     /**

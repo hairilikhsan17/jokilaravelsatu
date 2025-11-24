@@ -246,13 +246,12 @@
         .input-group-custom .input-icon {
             position: absolute;
             left: 15px;
-            top: calc(50% + 12px);
-            transform: translateY(-50%);
+            top: calc(1.2rem + 0.5rem + 0.875rem);
             color: #11998e;
             font-size: 1rem;
             z-index: 3;
             pointer-events: none;
-            transition: all 0.3s ease;
+            transition: color 0.3s ease;
         }
 
         .form-control, .form-select {
@@ -332,21 +331,6 @@
             color: #e74c3c;
         }
 
-        .password-toggle {
-            position: absolute;
-            right: 15px;
-            top: 68%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #999;
-            font-size: 1rem;
-            z-index: 2;
-            transition: color 0.3s ease;
-        }
-
-        .password-toggle:hover {
-            color: #11998e;
-        }
 
         .role-selector {
             display: flex;
@@ -656,11 +640,8 @@
                                    class="form-control @error('password') is-invalid @enderror" 
                                    id="password" 
                                    name="password" 
-                                   placeholder="Minimal 8 karakter"
+                                   placeholder="Masukkan password Anda"
                                    required>
-                            <span class="password-toggle" onclick="togglePassword('password', 'toggleIcon1')">
-                                <i class="bi bi-eye" id="toggleIcon1"></i>
-                            </span>
                             <div class="password-strength">
                                 <div class="password-strength-bar" id="strengthBar"></div>
                             </div>
@@ -682,9 +663,6 @@
                                    name="password_confirmation" 
                                    placeholder="Ulangi password"
                                    required>
-                            <span class="password-toggle" onclick="togglePassword('password_confirmation', 'toggleIcon2')">
-                                <i class="bi bi-eye" id="toggleIcon2"></i>
-                            </span>
                         </div>
 
                         <!-- Register Button -->
@@ -708,21 +686,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Toggle password visibility
-        function togglePassword(inputId, iconId) {
-            const passwordInput = document.getElementById(inputId);
-            const toggleIcon = document.getElementById(iconId);
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleIcon.classList.remove('bi-eye');
-                toggleIcon.classList.add('bi-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                toggleIcon.classList.remove('bi-eye-slash');
-                toggleIcon.classList.add('bi-eye');
-            }
-        }
-
         // Password strength checker
         const passwordInput = document.getElementById('password');
         const strengthBar = document.getElementById('strengthBar');
